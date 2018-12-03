@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.*.Rnb.cached
+.DS_*
+*/.DS_*
+*.Rproj
+.Rbuildignore
+data/tung/*.RDS

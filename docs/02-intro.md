@@ -1,0 +1,142 @@
+---
+output: html_document
+---
+
+# Introduction to single-cell RNA-seq
+
+
+
+## Bulk RNA-seq
+
+* A major breakthrough (replaced microarrays) in the late 2000's and has been widely used since
+* Measures the __average expression level__ for each gene across a large population of input cells
+* Useful for comparative transcriptomics, e.g. samples of the same tissue from different species
+* Useful for quantifying expression signatures from ensembles, e.g. in disease studies
+* __Insufficient__ for studying heterogeneous systems, e.g. early development studies, complex tissues (brain)
+* Does __not__ provide insights into the stochastic nature of gene expression
+    
+## scRNA-seq
+
+* A __new__ technology, first publication by [@Tang2009-bu]
+* Did not gain widespread popularity until [~2014](https://www.ohio.edu/bioinformatics/upload/Single-Cell-RNA-seq-Method-of-the-Year-2013.pdf) when new protocols and lower sequencing costs made it more accessible
+* Measures the __distribution of expression levels__ for each gene across a population of cells
+* Allows to study new biological questions in which __cell-specific changes in transcriptome are important__, e.g. cell type identification, heterogeneity of cell responses, stochasticity of gene expression, inference of gene regulatory networks across the cells.
+* Datasets range __from $10^2$ to $10^6$ cells__ and increase in size every year
+* Currently there are several different protocols in use, e.g. SMART-seq2 [@Picelli2013-sb], CELL-seq [@Hashimshony2012-kd] and Drop-seq [@Macosko2015-ix]
+* There are also commercial platforms available, including the [Fluidigm C1](https://www.fluidigm.com/products/c1-system), [Wafergen ICELL8](https://www.wafergen.com/products/icell8-single-cell-system) and the [10X Genomics Chromium](https://www.10xgenomics.com/single-cell/)
+* Several computational analysis methods from bulk RNA-seq __can__ be used
+* __But in most cases__ computational analysis requires adaptation of the existing methods or development of new ones
+
+## Workflow
+
+<div class="figure" style="text-align: center">
+<img src="figures/RNA-Seq_workflow-5.pdf.jpg" alt="Single cell sequencing (taken from Wikipedia)" width="90%" />
+<p class="caption">(\#fig:intro-rna-seq-workflow)Single cell sequencing (taken from Wikipedia)</p>
+</div>
+
+Overall, experimental scRNA-seq protocols are similar to the methods used for bulk RNA-seq. We will be discussing some of the most common approaches in the next chapter.
+
+## Computational Analysis
+
+This course is concerned with the computational analysis of the data
+obtained from scRNA-seq experiments. The first steps (yellow) are general for any highthroughput sequencing data. Later steps (orange) require a mix of existing RNASeq analysis methods and novel methods to address the technical difference of scRNASeq. Finally the biological interpretation (blue) __should__ be analyzed with methods specifically developed for scRNASeq.
+
+<div class="figure" style="text-align: center">
+<img src="figures/flowchart.png" alt="Flowchart of the scRNA-seq analysis" width="65%" />
+<p class="caption">(\#fig:intro-flowchart)Flowchart of the scRNA-seq analysis</p>
+</div>
+
+There are several reviews of the scRNA-seq analysis available including [@Stegle2015-uv].
+
+Today, there are also several different analysis tools available for 
+carrying out one or more steps in the flowchart above. These include:
+
+* [Bioconductor](https://master.bioconductor.org/packages/release/workflows/html/simpleSingleCell.html) is a open-source, open-development software project for the analysis of high-throughput genomics data, including packages for the analysis of single-cell data.
+* [Seurat](http://satijalab.org/seurat/) is an R package designed for QC, analysis, and exploration of single cell RNA-seq data.
+* [scanpy](https://scanpy.readthedocs.io/en/stable/) is a Python-based, scalable toolkit for analyzing single-cell gene expression data. It includes preprocessing, visualization, clustering, pseudotime and trajectory inference and differential expression testing. 
+* [Falco](https://github.com/VCCRI/Falco/) a single-cell RNA-seq processing framework on the cloud.
+* [ASAP](https://asap.epfl.ch/) (Automated Single-cell Analysis Pipeline) is an interactive web-based platform for single-cell analysis.
+
+
+## Challenges
+
+The main difference between bulk and single cell RNA-seq is that each sequencing library represents a single cell, instead of a population of cells. Therefore, significant attention has to be paid to comparison of the results from different cells (sequencing libraries). The main sources of discrepancy between the libraries are:
+
+* __Amplification__ (up to 1 million fold)
+* __Gene 'dropouts'__ in which a gene is observed at a moderate expression level in one cell but is not detected in another cell [@Kharchenko2014-ts, @Hicks:2018aa].
+
+In both cases the discrepancies are introduced due to low starting amounts of transcripts since the RNA comes from one cell only. Improving the transcript capture efficiency and reducing the amplification bias are currently active areas of research. However, as we shall see in this course, it is possible to alleviate some of these issues through proper normalization and corrections.
+
+## Experimental methods
+
+<div class="figure" style="text-align: center">
+<img src="figures/moores-law.png" alt="Moore's law in single cell transcriptomics (image taken from [Svensson et al](https://arxiv.org/abs/1704.01379))" width="100%" />
+<p class="caption">(\#fig:unnamed-chunk-2)Moore's law in single cell transcriptomics (image taken from [Svensson et al](https://arxiv.org/abs/1704.01379))</p>
+</div>
+
+Development of new methods and protocols for scRNA-seq 
+is currently a very active area of research, and several
+protocols have been published over the last few years. A 
+non-comprehensive list includes:
+
+* CEL-seq [@Hashimshony2012-kd]
+* CEL-seq2 [@Hashimshony2016-lx]
+* Drop-seq [@Macosko2015-ix]
+* InDrop-seq [@Klein2015-kz]
+* MARS-seq [@Jaitin2014-ko]
+* SCRB-seq [@Soumillon2014-eu]
+* Seq-well [@Gierahn2017-es]
+* Smart-seq [@Picelli2014-ic]
+* Smart-seq2 [@Picelli2014-ic]
+* [SMARTer](http://www.clontech.com/US/Products/cDNA_Synthesis_and_Library_Construction/Next_Gen_Sequencing_Kits/Total_RNA-Seq/Universal_RNA_Seq_Random_Primed)
+* STRT-seq [@Islam2014-cn]
+* 10X Genomics Chromium [@Zheng2017aa]
+
+The methods can be categorized in different ways, but the two most important aspects are __quantification__ and __capture__. 
+
+For quantification, there are two types, __full-length__ and __tag-based__. The former tries to achieve a uniform read coverage of each transcript. By contrast, tag-based protocols only capture either the 5'- or 3'-end of each RNA. The choice of quantification method has important implications for what types of analyses the data can be used for. In theory, full-length protocols should provide an even coverage of transcripts, but as we shall see, there are often biases in the coverage. The main advantage of tag-based protocol is that they can be combined with unique molecular identifiers (UMIs) which can help improve the quantifications. On the other hand, being restricted to one end of the transcript may reduce the mappability and it also makes it harder to distinguish different isoforms [@Archer2016-zq].
+
+The strategy used for capture determines throughput, how the cells can be selected as well as what kind of additional information besides the sequencing that can be obtained. The three most widely used options are __microwell-__, __microfluidic-__ and __droplet-__ based.
+
+<div class="figure" style="text-align: center">
+<img src="figures/300px-Microplates.jpg" alt="Image of microwell plates (image taken from Wikipedia)" width="70%" />
+<p class="caption">(\#fig:unnamed-chunk-3)Image of microwell plates (image taken from Wikipedia)</p>
+</div>
+
+For well-based platforms, cells are isolated using for example pipette or laser capture and placed in microfluidic wells. One advantage of well-based methods is that they can be combined with fluorescent activated cell sorting (FACS), making it possible to select cells based on surface markers. This strategy is thus very useful for situations when one wants to isolate a specific subset of cells for sequencing. Another advantage is that one can take pictures of the cells. The image provides an additional modality and a particularly useful application is to identify wells containg damaged cells or doublets. The main drawback of these methods is that they are often  low-throughput and the amount of work required per cell may be considerable.
+
+<div class="figure" style="text-align: center">
+<img src="figures/fluidigmC1.jpg" alt="Image of a 96-well Fluidigm C1 chip (image taken from Fluidigm)" width="70%" />
+<p class="caption">(\#fig:unnamed-chunk-4)Image of a 96-well Fluidigm C1 chip (image taken from Fluidigm)</p>
+</div>
+
+Microfluidic platforms, such as [Fluidigm's C1](https://www.fluidigm.com/products/c1-system#workflow), provide a more integrated system for capturing cells and for carrying out the reactions necessary for the library preparations. Thus, they provide a higher throughput than microwell based platforms. Typically, only around 10% of cells are captured in a microfluidic platform and thus they are not appropriate if one is dealing with rare cell-types or very small amounts of input. Moreover, the chip is relatively expensive, but since reactions can be carried out in a smaller volume money can be saved on reagents.
+
+<div class="figure" style="text-align: center">
+<img src="figures/drop-seq.png" alt="Schematic overview of the drop-seq method (Image taken from Macosko et al)" width="60%" />
+<p class="caption">(\#fig:unnamed-chunk-5)Schematic overview of the drop-seq method (Image taken from Macosko et al)</p>
+</div>
+
+The idea behind droplet-based methods is to encapsulate each individual cell inside a nanoliter droplet together with a bead. The bead is loaded with the enzymes required to construct the library. In particular, each bead contains a unique barcode which is attached to all of the reads originating from that cell. Thus, all of the droplets can be pooled, sequenced together and the reads can subsequently be assigned to the cell of origin based on the barcodes. Droplet platforms typically have the highest throughput since the library preparation costs are on the order of $.05$ USD/cell. Instead, sequencing costs often become the limiting factor and a typical experiment the coverage is low with only a few thousand different transcripts detected [@Ziegenhain2017-cu].
+
+## What platform to use for my experiment?
+
+The most suitable platform depends on the biological question at hand. For example, if one is interested in characterizing the composition of a tissue, then a droplet-based method which will allow a very large number of cells to be captured is likely to be the most appropriate. On the other hand, if one is interesting in characterizing a rare cell-population for which there is a known surface marker, then it is probably best to enrich using FACS and then sequence a smaller number of cells.
+
+Clearly, full-length transcript quantification will be more appropriate if one is interested in studying different isoforms since tagged protocols are much more limited. By contrast, UMIs can only be used with tagged protocols and they can facilitate gene-level quantification.
+
+Two recent studies from the Enard group [@Ziegenhain2017-cu] and the Teichmann group [@Svensson2017-op] have compared several different protocols. In their study, Ziegenhain et al compared five different protocols on the same sample of mouse embryonic stem cells (mESCs). By controlling for the number of cells as well as the sequencing depth, the authors were able to directly compare the sensitivity, noise-levels and costs of the different protocols. One example of their conclusions is illustrated in the figure below which shows the number of genes detected (for a given detection threshold) for the different methods. As you can see, there is almost a two-fold difference between drop-seq and Smart-seq2, suggesting that the choice of protocol can have a major impact on the study
+
+<div class="figure" style="text-align: center">
+<img src="figures/ziegenhainEnardFig1.png" alt="Enard group study" width="60%" />
+<p class="caption">(\#fig:unnamed-chunk-6)Enard group study</p>
+</div>
+
+Svensson et al take a different approach by using synthetic transcripts (spike-ins, more about these later) with known concentrations to measure the accuracy and sensitivity of different protocols. Comparing a wide range of studies, they also reported substantial differences between the protocols.
+
+<div class="figure" style="text-align: center">
+<img src="figures/svenssonTeichmannFig2.png" alt="Teichmann group study" width="100%" />
+<p class="caption">(\#fig:unnamed-chunk-7)Teichmann group study</p>
+</div>
+
+As protocols are developed and computational methods for quantifying the technical noise are improved, it is likely that future studies will help us gain further insights regarding the strengths of the different methods. These comparative studies are helpful not only for helping researchers decide which protocol to use, but also for developing new methods as the benchmarking makes it possible to determine what strategies are the most useful ones.

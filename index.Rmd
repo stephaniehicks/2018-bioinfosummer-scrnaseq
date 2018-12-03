@@ -1,0 +1,109 @@
+--- 
+title: "Analysis of single cell RNA-seq data: 2018 BioInfoSummer Workshop"
+author: "Stephanie Hicks (<a href = 'https://twitter.com/stephaniehicks'>stephaniehicks</a>)"
+date: "`r Sys.Date()`"
+knit: "bookdown::render_book"
+documentclass: book
+bibliography: [book.bib]
+biblio-style: apalike
+link-citations: yes
+always_allow_html: yes
+---
+
+# Welcome! 
+
+```{r, echo=FALSE, message=FALSE}
+library(knitr)
+opts_chunk$set(fig.align = "center")
+```
+
+## Preface 
+The material for this work was kindly borrowed with permission and adapted
+from the fantastic online course 
+[Analysis of single cell RNA-seq data](http://hemberg-lab.github.io/scRNA.seq.course/index.html)
+from Vladimir Kiselev (<a href = 'https://twitter.com/wikiselev'>wikiselev</a>), Tallulah Andrews (<a href = 'https://twitter.com/talandrews'>talandrews</a>), Jennifer Westoby (<a href = 'https://twitter.com/Jenni_Westoby'>Jenni_Westoby</a>), Davis McCarthy (<a href = 'https://twitter.com/davisjmcc'>davisjmcc</a>), Maren Büttner (<a href = 'https://twitter.com/marenbuettner'>marenbuettner</a>) and Martin Hemberg (<a href = 'https://twitter.com/m_hemberg'>m_hemberg</a>). 
+
+
+
+The material in the course above covers about 1.5 days 
+and we will be taking a subset of the material for our 
+2-3 hour workshop for 2018 BioInfoSummer. 
+
+
+## About the course
+
+Today it is possible to obtain genome-wide transcriptome 
+data from single cells using high-throughput sequencing 
+(scRNA-seq). The main advantage of scRNA-seq is that the
+cellular resolution and the genome wide scope makes it 
+possible to address issues that are intractable using
+other methods, e.g. bulk RNA-seq or single-cell RT-qPCR. 
+However, to analyze scRNA-seq data, novel methods are 
+required and some of the underlying assumptions for the 
+methods developed for bulk RNA-seq experiments are no longer valid.
+
+In this course we will discuss some of the questions that
+can be addressed using scRNA-seq as well as the available
+computational and statistical methods available. The number
+of computational tools is increasing rapidly and we are 
+doing our best to keep up to date with what is available.
+One of the main constraints for this course is that we 
+would like to use tools that are implemented in R and 
+that run reasonably fast. Moreover, we will also confess
+to being somewhat biased towards methods that have been 
+developed either by us or by our friends and colleagues. 
+
+
+
+## GitHub
+
+The orginal and complete course material is available at: 
+
+<a href="https://github.com/hemberg-lab/scRNA.seq.course" target="blank">https://github.com/hemberg-lab/scRNA.seq.course</a>
+
+
+The adapted material for this course at BioInfoSummer 2018 is
+available at: 
+
+<a href="https://github.com/stephaniehicks/2018-bioinfosummer-scrnaseq" target="blank">https://github.com/stephaniehicks/2018-bioinfosummer-scrnaseq</a>
+
+## Installation
+
+The course material is available on the
+[course GitHub repository](https://github.com/stephaniehicks/2018-bioinfosummer-scrnaseq) 
+which can be cloned using 
+
+```{bash, eval=FALSE}
+git clone https://github.com/stephaniehicks/2018-bioinfosummer-scrnaseq
+```
+
+
+## License
+
+The license from the [original course material](https://github.com/hemberg-lab/scRNA.seq.course)
+is licensed under <b>GPL-3</b> and that license is maintained here. 
+Anyone is welcome to go through the material in order to
+learn about analysis of scRNA-seq data. If you plan to use 
+the material for your own teaching, the original authors have 
+requested that they would appreciate it if you tell them about
+it in addition to providing a suitable citation. Please contact 
+the original lead author 
+<a href="mailto:vladimir.yu.kiselev@gmail.com">Vladimir Kiselev</a>. 
+
+## Prerequisites
+
+The course is intended for those who have basic familiarity 
+with Unix and the R scripting language. We will also assume that 
+you are familiar with mapping and analysing bulk RNA-seq data as 
+well as with the commonly available computational tools.
+
+## Contact
+
+If you have any __comments__, __questions__ or __suggestions__ about the 
+original and complete course material, please contact 
+<a href="mailto:vladimir.yu.kiselev@gmail.com">Vladimir Kiselev</a>.
+
+If you have questions about the material presented in this course at 
+BioInfoSummer 2018, you can reach me at 
+<a href="mailto:shicks19@jhu.edu">Stephanie Hicks</a>
+
