@@ -203,11 +203,6 @@ pairs of clusters are subsequently merged to create a hieararchy:
 
 
 
-
-```r
-knitr::include_graphics("figures/hierarchical_clustering2.png")
-```
-
 <div class="figure" style="text-align: center">
 <img src="figures/hierarchical_clustering2.png" alt="The hierarchical clustering dendrogram" width="50%" />
 <p class="caption">(\#fig:clust-hierarch-dendr)The hierarchical clustering dendrogram</p>
@@ -225,11 +220,6 @@ the goal is to partition _N_ cells into _k_ different clusters.
 In an iterative manner, cluster centers are assigned and
 each cell is assigned to its nearest cluster:
 
-
-```r
-knitr::include_graphics("figures/k-means.png")
-```
-
 <div class="figure" style="text-align: center">
 <img src="figures/k-means.png" alt="Schematic representation of the k-means clustering" width="100%" />
 <p class="caption">(\#fig:clust-k-means)Schematic representation of the k-means clustering</p>
@@ -243,11 +233,6 @@ step at some point.
 Over the last two decades there has been a lot of interest in
 analyzing networks in various domains. One goal is to
 identify groups or modules of nodes in a network.
-
-
-```r
-knitr::include_graphics("figures/graph_network.jpg")
-```
 
 <div class="figure" style="text-align: center">
 <img src="figures/graph_network.jpg" alt="Schematic representation of the graph network" width="100%" />
@@ -279,11 +264,6 @@ millions of nodes.
 
 #### [SC3](http://bioconductor.org/packages/SC3/)
 
-
-```r
-knitr::include_graphics("figures/sc3.png")
-```
-
 <div class="figure" style="text-align: center">
 <img src="figures/sc3.png" alt="SC3 pipeline" width="100%" />
 <p class="caption">(\#fig:clust-sc3)SC3 pipeline</p>
@@ -314,7 +294,7 @@ pcaReduce [@Zurauskiene2016-kg] combines PCA, _k_-means and “iterative” hier
 
 #### Seurat clustering
 
-[`Seurat`](https://github.com/satijalab/seurat) clustering is based on a _community detection_ approach similar to `SNN-Cliq` and to one previously proposed for analyzing CyTOF data [@Levine2015-fk]. Since `Seurat` has become more like an all-in-one tool for scRNA-seq data analysis we dedicate a separate chapter to discuss it in more details (chapter \@ref(seurat-chapter)).
+[`Seurat`](https://github.com/satijalab/seurat) clustering is based on a _community detection_ approach similar to `SNN-Cliq` and to one previously proposed for analyzing CyTOF data [@Levine2015-fk].
 
 ### Comparing clustering
 
@@ -513,7 +493,7 @@ mclust::adjustedRandIndex(colData(deng)$cell_type2,
 ```
 
 ```
-## [1] 0.6638246
+## [1] 0.6664553
 ```
 
 __Note__ `SC3` can also be run in an interactive `Shiny` 
@@ -1191,30 +1171,13 @@ DE_Quality_AUC(pVals)
 ## [1] 0.6779454
 ```
 
-### edgeR
+### edgeR or DESeq2
 
-edgeR is based on a negative binomial model of gene expression and 
+[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) and 
+[DESeq2](https://www.bioconductor.org/packages/release/bioc/html/DESeq2.html)
+are based on a negative binomial model of gene expression and 
 uses a generalized linear model (GLM) framework, the enables us
 to include other factors such as batch to the model.
-
-
-```r
-dge <- DGEList(
-    counts = assay(umi.qc.sub, "counts"), 
-    norm.factors = rep(1, length(assay(umi.qc.sub, "counts")[1,])), 
-    group = group
-)
-group_edgeR <- factor(group)
-design <- model.matrix(~ group_edgeR)
-dge <- estimateDisp(dge, design = design, trend.method = "none")
-fit <- glmFit(dge, design)
-res <- glmLRT(fit)
-pVals <- res$table[,4]
-names(pVals) <- rownames(res$table)
-
-pVals <- p.adjust(pVals, method = "fdr")
-DE_Quality_AUC(pVals)
-```
 
 ### Monocle
 
@@ -1230,35 +1193,14 @@ DE_Quality_AUC(pVals)
 [SCDE](http://hms-dbmi.github.io/scde/) is the first single-cell specific DE method. It fits a zero-inflated negative binomial model to expression data using Bayesian statistics. The usage below tests for differences in mean expression of individual genes across groups but recent versions include methods to test for differences in mean expression or dispersion of groups of genes, usually representing a pathway.
 
 
-### zinbwave + DESeq2
+### zinbwave + DESeq2/edger
+
+Recent work has [shown](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-018-1406-4) 
+differential expression methods developed for bulk RNA-seq 
+(e.g. DESeq2/edger) can be used with a weighting strategy (gene-specific 
+and cell-specific weights = probability of dropout events in scRNA-seq data e.g. 
+[zinbwave](https://bioconductor.org/packages/release/bioc/html/zinbwave.html))
+to unlock bulk RNA-seq DE pipelines for zero-inflated data,
+boosting performance for scRNA-seq.
 
 
-```r
-library(zinbwave)
-
-# low count filter - at least 25 samples with count of 5 or more
-keep <- rowSums(counts(umi.qc.sub) > 0) > 5
-table(keep)
-zinb <- umi.qc.sub[keep,]
-zinb$individual <-  colData(umi.qc.sub)$individual
-
-# we need to reorganize the assays in the SumExp from splatter
-nms <- c("counts", setdiff(assayNames(zinb), "counts"))
-assays(zinb) <- assays(zinb)["counts"] # c("counts", "glm_indi")]
-# epsilon setting as recommended by the ZINB-WaVE integration paper
-# system.time({
-  zinb <- zinbwave(zinb, K=0, BPPARAM=SerialParam(), epsilon=1e12)
-# })
-```
-
-Van den Berge and Perraudeau and others have shown the LRT may perform
-better for null hypothesis testing, so we use the LRT. In order to use
-the Wald test, it is recommended to set `useT=TRUE`.
-
-
-```r
-suppressPackageStartupMessages(library(DESeq2))
-dds <- DESeqDataSet(zinb, design=~individual)
-dds <- DESeq(dds, test="LRT", reduced=~1,
-               sfType="poscounts", minmu=1e-6, minRep=Inf)
-```

@@ -253,11 +253,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.5.1" data-path="biological-analysis.html"><a href="biological-analysis.html#introduction-6"><i class="fa fa-check"></i><b>6.5.1</b> Introduction</a></li>
 <li class="chapter" data-level="6.5.2" data-path="biological-analysis.html"><a href="biological-analysis.html#kolmogorov-smirnov-test"><i class="fa fa-check"></i><b>6.5.2</b> Kolmogorov-Smirnov test</a></li>
 <li class="chapter" data-level="6.5.3" data-path="biological-analysis.html"><a href="biological-analysis.html#wilcoxmann-whitney-u-test"><i class="fa fa-check"></i><b>6.5.3</b> Wilcox/Mann-Whitney-U Test</a></li>
-<li class="chapter" data-level="6.5.4" data-path="biological-analysis.html"><a href="biological-analysis.html#edger"><i class="fa fa-check"></i><b>6.5.4</b> edgeR</a></li>
+<li class="chapter" data-level="6.5.4" data-path="biological-analysis.html"><a href="biological-analysis.html#edger-or-deseq2"><i class="fa fa-check"></i><b>6.5.4</b> edgeR or DESeq2</a></li>
 <li class="chapter" data-level="6.5.5" data-path="biological-analysis.html"><a href="biological-analysis.html#monocle"><i class="fa fa-check"></i><b>6.5.5</b> Monocle</a></li>
 <li class="chapter" data-level="6.5.6" data-path="biological-analysis.html"><a href="biological-analysis.html#mast"><i class="fa fa-check"></i><b>6.5.6</b> MAST</a></li>
 <li class="chapter" data-level="6.5.7" data-path="biological-analysis.html"><a href="biological-analysis.html#scde"><i class="fa fa-check"></i><b>6.5.7</b> SCDE</a></li>
-<li class="chapter" data-level="6.5.8" data-path="biological-analysis.html"><a href="biological-analysis.html#zinbwave-deseq2"><i class="fa fa-check"></i><b>6.5.8</b> zinbwave + DESeq2</a></li>
+<li class="chapter" data-level="6.5.8" data-path="biological-analysis.html"><a href="biological-analysis.html#zinbwave-deseq2edger"><i class="fa fa-check"></i><b>6.5.8</b> zinbwave + DESeq2/edger</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -547,19 +547,19 @@ assign it to <code>normcounts</code> instead:</p>
 <pre><code>## [1] 10 10</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">head</span>(<span class="kw">normcounts</span>(sce))</a></code></pre></div>
 <pre><code>##          cell1    cell2    cell3    cell4    cell5    cell6    cell7
-## gene1 3.807355 3.584963 3.000000 3.584963 3.169925 3.321928 4.247928
-## gene2 3.700440 3.807355 3.000000 3.321928 2.584963 3.459432 3.807355
-## gene3 3.807355 3.321928 3.584963 3.169925 3.584963 3.584963 3.459432
-## gene4 3.169925 3.584963 3.584963 3.321928 3.584963 3.459432 3.459432
-## gene5 3.584963 3.321928 3.807355 3.000000 3.321928 3.584963 3.459432
-## gene6 3.169925 3.169925 3.584963 3.584963 3.000000 3.000000 3.169925
+## gene1 3.169925 3.321928 3.321928 3.321928 4.000000 3.169925 3.321928
+## gene2 3.169925 3.169925 3.169925 3.321928 4.000000 3.459432 3.459432
+## gene3 3.807355 3.169925 3.906891 4.247928 3.000000 3.000000 3.459432
+## gene4 3.584963 3.321928 3.906891 3.807355 3.169925 3.321928 3.807355
+## gene5 3.906891 3.459432 3.321928 3.169925 4.169925 3.169925 3.584963
+## gene6 4.169925 3.000000 3.000000 3.169925 4.169925 3.169925 3.700440
 ##          cell8    cell9   cell10
-## gene1 3.807355 3.700440 2.321928
-## gene2 4.087463 3.584963 3.906891
-## gene3 2.321928 3.584963 3.906891
-## gene4 3.169925 3.169925 2.321928
-## gene5 3.459432 3.321928 3.000000
-## gene6 3.169925 4.000000 3.906891</code></pre>
+## gene1 3.700440 3.700440 3.321928
+## gene2 3.906891 3.700440 3.906891
+## gene3 3.584963 3.459432 3.000000
+## gene4 4.087463 3.000000 3.169925
+## gene5 4.087463 3.584963 3.321928
+## gene6 3.169925 2.584963 3.700440</code></pre>
 </div>
 <div id="scater-package" class="section level3">
 <h3><span class="header-section-number">4.3.2</span> <code>scater</code> package</h3>

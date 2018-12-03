@@ -253,11 +253,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.5.1" data-path="biological-analysis.html"><a href="biological-analysis.html#introduction-6"><i class="fa fa-check"></i><b>6.5.1</b> Introduction</a></li>
 <li class="chapter" data-level="6.5.2" data-path="biological-analysis.html"><a href="biological-analysis.html#kolmogorov-smirnov-test"><i class="fa fa-check"></i><b>6.5.2</b> Kolmogorov-Smirnov test</a></li>
 <li class="chapter" data-level="6.5.3" data-path="biological-analysis.html"><a href="biological-analysis.html#wilcoxmann-whitney-u-test"><i class="fa fa-check"></i><b>6.5.3</b> Wilcox/Mann-Whitney-U Test</a></li>
-<li class="chapter" data-level="6.5.4" data-path="biological-analysis.html"><a href="biological-analysis.html#edger"><i class="fa fa-check"></i><b>6.5.4</b> edgeR</a></li>
+<li class="chapter" data-level="6.5.4" data-path="biological-analysis.html"><a href="biological-analysis.html#edger-or-deseq2"><i class="fa fa-check"></i><b>6.5.4</b> edgeR or DESeq2</a></li>
 <li class="chapter" data-level="6.5.5" data-path="biological-analysis.html"><a href="biological-analysis.html#monocle"><i class="fa fa-check"></i><b>6.5.5</b> Monocle</a></li>
 <li class="chapter" data-level="6.5.6" data-path="biological-analysis.html"><a href="biological-analysis.html#mast"><i class="fa fa-check"></i><b>6.5.6</b> MAST</a></li>
 <li class="chapter" data-level="6.5.7" data-path="biological-analysis.html"><a href="biological-analysis.html#scde"><i class="fa fa-check"></i><b>6.5.7</b> SCDE</a></li>
-<li class="chapter" data-level="6.5.8" data-path="biological-analysis.html"><a href="biological-analysis.html#zinbwave-deseq2"><i class="fa fa-check"></i><b>6.5.8</b> zinbwave + DESeq2</a></li>
+<li class="chapter" data-level="6.5.8" data-path="biological-analysis.html"><a href="biological-analysis.html#zinbwave-deseq2edger"><i class="fa fa-check"></i><b>6.5.8</b> zinbwave + DESeq2/edger</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -973,7 +973,8 @@ of the confounders and explanatory variables.</p>
 sequenced on highly multiplexed platforms the total
 reads which are derived from each cell may differ substantially.
 Some quantification methods
-(eg. <a href="http://cole-trapnell-lab.github.io/cufflinks/"><code>Cufflinks</code></a>, <a href="http://deweylab.github.io/RSEM/"><code>RSEM</code></a>) incorporated
+(eg. <a href="http://cole-trapnell-lab.github.io/cufflinks/"><code>Cufflinks</code></a>,
+<a href="http://deweylab.github.io/RSEM/"><code>RSEM</code></a>) incorporated
 library size when determining gene expression estimates
 thus do not require this normalization.</p>
 <p>However, if another quantification method was used then
@@ -981,9 +982,11 @@ library size must be corrected for by multiplying or
 dividing each column of the expression matrix by a
 “normalization factor” which is an estimate of the
 library size relative to the other cells. Many methods
-to correct for library size have been developped for
-bulk RNA-seq and can be equally applied to scRNA-seq
-(eg. <strong>UQ</strong>, <strong>SF</strong>, <strong>CPM</strong>, <strong>RPKM</strong>, <strong>FPKM</strong>, <strong>TPM</strong>).</p>
+to correct for library size have been developed for
+bulk RNA-seq and can technically applied to scRNA-seq
+(eg. <strong>UQ</strong>, <strong>SF</strong>, <strong>CPM</strong>, <strong>RPKM</strong>, <strong>FPKM</strong>, <strong>TPM</strong>),
+but these are not advised in practice. However, we will
+discuss them for completeness.</p>
 </div>
 <div id="normalisations" class="section level3">
 <h3><span class="header-section-number">5.4.3</span> Normalisations</h3>
@@ -994,7 +997,8 @@ to counts per million (__CPM__) by dividing each column by
 its total then multiplying by 1,000,000. Note that spike-ins
 should be excluded from the calculation of total expression
 in order to correct for total cell RNA content, therefore we
-will only use endogenous genes. Example of a <strong>CPM</strong> function in <code>R</code>:</p>
+will only use endogenous genes.
+Example of a <strong>CPM</strong> function in <code>R</code>:</p>
 <div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" title="1">calc_cpm &lt;-</a>
 <a class="sourceLine" id="cb80-2" title="2"><span class="cf">function</span> (expr_mat, <span class="dt">spikes =</span> <span class="ot">NULL</span>) </a>
 <a class="sourceLine" id="cb80-3" title="3">{</a>
@@ -1149,7 +1153,7 @@ an <em>RLE</em> close to zero. Example of a <em>RLE</em> function in <code>R</co
 were developed for bulk RNA-seq data and, depending on the
 experimental context, may not be appropriate for single-cell
 RNA-seq data, as their underlying assumptions may be
-problematically violated.</p>
+problematically violated. Therefore, will not apply them here.</p>
 <p><strong>Note</strong> <code>scater</code> acts as a wrapper for the <code>calcNormFactors()</code>
 function from <code>edgeR</code> which implements several library size
 normalization methods making it easy to apply any of these
@@ -1164,19 +1168,17 @@ method in the <code>DESeq</code>/<code>DESeq2</code> packages. In addition, some
 versions of <code>edgeR</code> will not calculate the normalization
 factors correctly unless <code>lib.size</code> is set at 1 for all cells.</p>
 <p><strong>Note</strong> For <strong>CPM</strong> normalisation we use <code>scater</code>’s
-<code>calculateCPM()</code> function. For <strong>RLE</strong>, <strong>UQ</strong> and <strong>TMM</strong>
-we use <code>scater</code>’s <code>normaliseExprs()</code> function. For <strong>scran</strong>
+<code>calculateCPM()</code> function. For <strong>scran</strong>
 we use <code>scran</code> package to calculate size factors (it also
 operates on <code>SingleCellExperiment</code> class) and <code>scater</code>’s
 <code>normalize()</code> to normalise the data. All these normalization
 functions save the results to the <code>logcounts</code> slot of the
-<code>SCE</code> object. For <strong>downsampling</strong> we use our own functions
-shown above.</p>
+<code>SCE</code> object.</p>
 </div>
 </div>
 <div id="normalization-practice" class="section level2">
 <h2><span class="header-section-number">5.5</span> Normalization practice</h2>
-<p>We will continue to work with the <code>tung</code> data that was used
+<p>We will continue to work with the <code>Tung</code> data that was used
 in the previous section.</p>
 <div id="raw" class="section level3">
 <h3><span class="header-section-number">5.5.1</span> Raw</h3>
