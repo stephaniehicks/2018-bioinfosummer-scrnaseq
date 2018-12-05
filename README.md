@@ -22,8 +22,8 @@ install.packages("RColorBrewer", "reshape2",
 			  "matrixStats", "mclust", "pheatmap", "mvoutlier")
 devtools::install_github("hemberg-lab/scRNA.seq.funcs")
 devtools::install_github("theislab/kBET")
-BiocManager::install("scater", "scran", "Rtsne", "sva", 
-				"DESeq2", "edgeR", "SC3", "zinbwave")
+BiocManager::install(c("scater", "scran", "Rtsne", "sva", 
+				"DESeq2", "edgeR", "SC3", "zinbwave"))
 
 ```
 
